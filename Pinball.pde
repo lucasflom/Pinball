@@ -1,6 +1,15 @@
 int numBalls = 2;
 
+String fname = "level1.txt";
+
 Circle[] balls = new Circle[numBalls];
+
+int numCircs;
+Circle[] circObs;
+int numLines;
+Line[] lineObs;
+int numBoxes;
+Box[] boxObs; 
 
 float cor = 0.75f; // Coefficient of Restitution
 
@@ -19,6 +28,28 @@ void setup() {
     smooth();
     noStroke();
     resetBalls();
+    
+    // read from the file
+    String[] lines = loadStrings(fname);
+    numCircs = int(lines[0].substring(3));
+    numLines = int(lines[numCircs+1].substring(3));
+    numBoxes = int(lines[numCircs+numLines+2].substring(3));
+
+    circObs = new Circle[numCircs];
+    for (int i = 1; i < (numCircs+1); i++){
+        String[] data = lines[i].split(" ");
+        circObs[i-1] = new Circle(new Vec2(float(data[1]), float(data[2])), float(data[3]), 10000.0, new Vec2(0,0));
+    }
+    lineObs = new Line[numLines];
+    for (int i = (numCircs + 2); i < (numCircs + numLines + 2); i++){
+        String[] data = lines[i].split(" ");
+        lineObs[i - (numCircs + 2)] = new Line(float(data[1]), float(data[2]), float(data[3]), float(data[4]));
+    }
+    boxObs = new Box[numBoxes];
+    for (int i = (numCircs + numLines + 3); i < (numCircs + numLines + numBoxes + 3); i++){
+        String[] data = lines[i].split(" ");
+        boxObs[i - (numCircs + numLines + 3)] = new Box(float(data[1]), float(data[2]), float(data[3]), float(data[4]));
+    }
 }
 
 void updatePhysics(float dt) {
@@ -93,10 +124,24 @@ void draw(){
     strokeWeight(5);
     Line[] walls = {new Line(10.0, 10.0, 10.0, float(height - 10)), new Line(10.0, 10.0, float(width - 10), 10.0), new Line(float(width - 10), 10.0, float(width - 10), float(height - 10)), new Line(10, float(height - 10), float(width - 10), float(height - 10))};
     strokeWeight(1);
+	
 
+	// draw the walls
     for (int i = 0; i < walls.length; i++) {
         line(walls[i].l1.x, walls[i].l1.y, walls[i].l2.x, walls[i].l2.y);
     }
+
+    // draw the obstacles
+    for (int i = 0; i < numCircs; i++){
+		circle(circObs[i].pos.x, circObs[i].pos.y, circObs[i].r*2);
+	}
+    rectMode(CENTER);
+	for (int i = 0; i < numBoxes; i++){
+		rect(boxObs[i].pos.x, boxObs[i].pos.y, boxObs[i].w, boxObs[i].h);
+	}
+    for (int i = 0; i < numLines; i++){
+		line(lineObs[i].l1.x, lineObs[i].l1.y, lineObs[i].l2.x, lineObs[i].l2.y);
+	}
 
     // draw the balls
     for (int i = 0; i < numBalls; i++) {
