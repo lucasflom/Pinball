@@ -39,9 +39,30 @@ public class Circle {
     }
 
     // Circle v Box
+    // public Boolean isColliding(Box box) {
+    //     Vec2 closestPoint = new Vec2 (constrain(this.pos.x, box.pos.x - box.w/2, box.pos.x + box.w/2), constrain(this.pos.y, box.pos.y - box.h/2, box.pos.y + box.h/2));
+    //     return (this.pos.distanceTo(closestPoint) < this.r);
+    // }
     public Boolean isColliding(Box box) {
-        Vec2 closestPoint = new Vec2 (constrain(this.pos.x, box.pos.x - box.w/2, box.pos.x + box.w/2), constrain(this.pos.y, box.pos.y - box.h/2, box.pos.y + box.h/2));
-        return (this.pos.distanceTo(closestPoint) < this.r);
+        // Check if circle center is inside the box
+        // Check start point
+        if ((this.pos.x >= (box.pos.x - box.w/2)) && (this.pos.x <= (box.pos.x + box.w/2)) && (this.pos.y >= (box.pos.y - box.h/2)) && (this.pos.y <= (box.pos.y + box.h/2))) return true;
+        // Check if the circle intersects any of the boxes lines
+        Line b1 = new Line(box.pos.x - box.w/2, box.pos.y + box.h/2, box.pos.x + box.w/2, box.pos.y + box.h/2);
+        Line b2 = new Line(box.pos.x - box.w/2, box.pos.y - box.h/2, box.pos.x + box.w/2, box.pos.y - box.h/2);
+        Line b3 = new Line(box.pos.x - box.w/2, box.pos.y + box.h/2, box.pos.x - box.w/2, box.pos.y - box.h/2);
+        Line b4 = new Line(box.pos.x + box.w/2, box.pos.y + box.h/2, box.pos.x + box.w/2, box.pos.y - box.h/2);
+        if (this.isColliding(b1)) return true; 
+        if (this.isColliding(b2)) return true;
+        if (this.isColliding(b3)) return true;
+        if (this.isColliding(b4)) return true;
+        
+        return false;
+    }
+
+    // Returns the closest point between the circle and a box
+    public Vec2 closestPoint(Box box) {
+        return new Vec2 (constrain(this.pos.x, box.pos.x - box.w/2, box.pos.x + box.w/2), constrain(this.pos.y, box.pos.y - box.h/2, box.pos.y + box.h/2));
     }
 }
 

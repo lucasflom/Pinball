@@ -161,6 +161,26 @@ void updatePhysics(float dt) {
 
             }
         }
+        // Ball-Box Collision
+        for (int j = 0; j < numBoxes; j++){
+            Vec2 delta = balls[i].pos.minus(boxObs[j].pos);
+            float dist = delta.length();
+            if (balls[i].isColliding(boxObs[j])){
+                // Move out of collision
+                float overlap = (dist - balls[i].r - (boxObs[j].pos.distanceTo(balls[i].closestPoint(boxObs[j])))); // Include the box's side of it too
+                balls[i].pos.subtract(delta.normalized().times(overlap));
+
+                // Collision
+                Vec2 dir = delta.normalized();
+                float v1 = dot(balls[i].vel, dir);
+                float v2 = 0.0; // The obstacle never has a velocity
+                float m1 = balls[i].mass;
+                float m2 = 100000.0; // The mass shouldn't matter?
+                float nv1 = (m1 * v1 + m2 * v2 - m2 * (v1 - v2) * cor) / (m1 + m2);
+                float nv2 = (m1 * v1 + m2 * v2 - m1 * (v2 - v1) * cor) / (m1 + m2);
+                balls[i].vel = balls[i].vel.plus(dir.times(nv1 - v1));
+            }
+        }
     }
     
 }
