@@ -60,7 +60,7 @@ public class Circle {
         return false;
     }
 
-    // Returns the closest point between the circle and a box
+    // Returns the closest point between the circle and a box (Probably should be better and is causing the sliding motion)
     public Vec2 closestPoint(Box box) {
         return new Vec2 (constrain(this.pos.x, box.pos.x - box.w/2, box.pos.x + box.w/2), constrain(this.pos.y, box.pos.y - box.h/2, box.pos.y + box.h/2));
     }
