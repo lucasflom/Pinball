@@ -20,13 +20,22 @@ public class Circle {
     
     // Circle v Line Segment
     public Boolean isColliding(Line line) {
-        Vec2 closestPoint = new Vec2 (constrain(this.pos.x, line.l1.x, line.l2.x), constrain(this.pos.y, line.l1.y, line.l2.y));
+        // if ((line.l1.distanceTo(this.pos)) <= this.r || line.l2.distanceTo(this.pos <= this.r)){
+        //     return true;
+        // }
+        Vec2 closestPoint = this.closestPoint(line);
         return (this.pos.distanceTo(closestPoint) < this.r);
     }
 
     // Returns the closest point between the circle and a line
     public Vec2 closestPoint(Line line) {
-        return new Vec2 (constrain(this.pos.x, line.l1.x, line.l2.x), constrain(this.pos.y, line.l1.y, line.l2.y));
+        float len = line.l1.minus(line.l2).length();
+        float dot = (((this.pos.x-line.l1.x)*(line.l2.x-line.l1.x)) + ((this.pos.y-line.l1.y)*(line.l2.y-line.l1.y))) / pow(len, 2);
+        Vec2 closest = new Vec2(line.l1.x + (dot *(line.l2.x-line.l1.x)), (line.l1.y + (dot * (line.l2.y - line.l1.y))));
+        if (line.isColliding(closest)) return closest;
+        // There is no point on the line that is closest so return whichever end point is closest
+        if (line.l1.distanceTo(this.pos) < line.l2.distanceTo(this.pos)) return line.l1;
+        return line.l2;
     }
 
     // Circle v Box
@@ -38,10 +47,12 @@ public class Circle {
 
 public class Line {
     public Vec2 l1, l2;
+    public float length;
     
     public Line(float x1, float y1, float x2, float y2){
         this.l1 = new Vec2(x1, y1);
         this.l2 = new Vec2(x2, y2);
+        this.length = this.l1.distanceTo(this.l2);
     }
     
     // Inspiration for this came from lecture slides
@@ -50,7 +61,17 @@ public class Line {
         float cp2 = cross(this.l2.minus(this.l1), other.l2.minus(this.l1));
         return ((cp1 * cp2) >= 0); // Same sign, means they are on the same side of the line
     }
-    
+
+    // Line v Point
+    public Boolean isColliding(Vec2 point){
+        float d1 = this.l1.distanceTo(point);
+        float d2 = this.l2.distanceTo(point);
+        // Buffer added for accuracy of floats
+        float buffer = 0.1;
+        if (d1+d2 >= this.length-buffer && d1+d2 <= this.length+buffer) return true;
+        return false;
+    }
+
     // Line Segment v Line Segment
     public Boolean isColliding(Line other) {
         // Checks to see if either line crosses the other, checks both lines to be certain (***Could be moved to only one line?)
@@ -59,8 +80,8 @@ public class Line {
         return true;
     }
 
-  // Line Segment v Box
-  // This is modeled after the suggestion from lecture
+    // Line Segment v Box
+    // This is modeled after the suggestion from lecture
     public Boolean isColliding(Box box) {
         // Check if line is inside the box by checking if end points of line are inside the box (***Checking first cause it could save some time as it should be easier)
         // Check start point
