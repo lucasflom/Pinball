@@ -119,8 +119,50 @@ void updatePhysics(float dt) {
                 // ballVel[j] = new Vec2(0,0); // Replace with correct collisions response ballVelocity
             }
         }
+        // end billiards code
+        // Ball-Circle Collision
+        for (int j = 0; j < numCircs; j++){
+            Vec2 delta = balls[i].pos.minus(circObs[j].pos);
+            float dist = delta.length();
+            if (dist < balls[i].r + circObs[j].r){
+                // Move out of collision
+                float overlap = 0.5f * (dist - balls[i].r - circObs[j].r);
+                balls[i].pos.subtract(delta.normalized().times(overlap)); // This line may need to be changed to account for the obstacle not moving
+                
+                // Collision
+                Vec2 dir = delta.normalized();
+                float v1 = dot(balls[i].vel, dir);
+                float v2 = dot(circObs[j].vel, dir); // Should be 0 as the obstacles have no velocity
+                float m1 = balls[i].mass;
+                float m2 = circObs[j].mass;
+                float nv1 = (m1 * v1 + m2 * v2 - m2 * (v1 - v2) * cor) / (m1 + m2);
+                float nv2 = (m1 * v1 + m2 * v2 - m1 * (v2 - v1) * cor) / (m1 + m2);
+                balls[i].vel = balls[i].vel.plus(dir.times(nv1 - v1));
+            }
+        }
+        // Ball-Line Collision
+        for (int j = 0; j < numLines; j++){
+            Vec2 delta = balls[i].pos.minus(balls[i].closestPoint(lineObs[j]));
+            float dist = delta.length();
+            if (balls[i].isColliding(lineObs[j])){
+                // Move out of collision
+                float overlap = (dist - balls[i].r); // Could be major wonky
+                balls[i].pos.subtract(delta.normalized().times(overlap));
+
+                // Collision
+                Vec2 dir = delta.normalized();
+                float v1 = dot(balls[i].vel, dir);
+                float v2 = 0.0; // The obstacle never has a velocity
+                float m1 = balls[i].mass;
+                float m2 = 100000.0; // The mass shouldn't matter?
+                float nv1 = (m1 * v1 + m2 * v2 - m2 * (v1 - v2) * cor) / (m1 + m2);
+                float nv2 = (m1 * v1 + m2 * v2 - m1 * (v2 - v1) * cor) / (m1 + m2);
+                balls[i].vel = balls[i].vel.plus(dir.times(nv1 - v1));
+
+            }
+        }
     }
-    // end billiards code
+    
 }
 
 boolean leftPressed, rightPressed, upPressed, downPressed, shiftPressed;

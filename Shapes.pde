@@ -24,6 +24,11 @@ public class Circle {
         return (this.pos.distanceTo(closestPoint) < this.r);
     }
 
+    // Returns the closest point between the circle and a line
+    public Vec2 closestPoint(Line line) {
+        return new Vec2 (constrain(this.pos.x, line.l1.x, line.l2.x), constrain(this.pos.y, line.l1.y, line.l2.y));
+    }
+
     // Circle v Box
     public Boolean isColliding(Box box) {
         Vec2 closestPoint = new Vec2 (constrain(this.pos.x, box.pos.x - box.w/2, box.pos.x + box.w/2), constrain(this.pos.y, box.pos.y - box.h/2, box.pos.y + box.h/2));
