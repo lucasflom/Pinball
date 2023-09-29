@@ -46,7 +46,7 @@ public class Circle {
     public Boolean isColliding(Box box) {
         // Check if circle center is inside the box
         // Check start point
-        if ((this.pos.x >= (box.pos.x - box.w/2)) && (this.pos.x <= (box.pos.x + box.w/2)) && (this.pos.y >= (box.pos.y - box.h/2)) && (this.pos.y <= (box.pos.y + box.h/2))) return true;
+        if (box.isColliding(this.pos)) return true;
         // Check if the circle intersects any of the boxes lines
         Line b1 = new Line(box.pos.x - box.w/2, box.pos.y + box.h/2, box.pos.x + box.w/2, box.pos.y + box.h/2);
         Line b2 = new Line(box.pos.x - box.w/2, box.pos.y - box.h/2, box.pos.x + box.w/2, box.pos.y - box.h/2);
@@ -131,6 +131,12 @@ public class Box {
         pos = new Vec2(x,y);
         this.w = w;
         this.h = h;
+    }
+
+    // Box v Point
+    public Boolean isColliding(Vec2 point) {
+        if (point.x >= this.pos.x - this.w/2 && point.x <= this.pos.x + this.w/2 && point.y >= this.pos.y - this.h/2 && point.y <= this.pos.y + this.h/2) return true;
+        return false;
     }
     
     // Box v Box
