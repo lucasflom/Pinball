@@ -13,8 +13,8 @@ Box[] boxObs;
 
 float cor = 0.75f; // Coefficient of Restitution
 
-Box lFlipper;
-Box rFlipper;
+Flipper lFlipper;
+Flipper rFlipper;
 
 
 void resetBalls(){
@@ -33,8 +33,8 @@ void setup() {
     noStroke();
     resetBalls();
 
-    lFlipper = new Box((width/2)-110, height-20, 100, 10);
-    rFlipper = new Box((width/2)+60, height-20, 100, 10);    
+    lFlipper = new Flipper((width/2)-110, height-75, (width/2)-30, height-25);
+    rFlipper = new Flipper((width/2)+60, height-25, (width/2)+140, height-75);    
 
     // read from the file
     String[] lines = loadStrings(fname);
@@ -182,6 +182,7 @@ void updatePhysics(float dt) {
             }
         }
         // Ball-Flipper Collision (Needs fixing)
+        /*
         Vec2 delta = balls[i].pos.minus(lFlipper.pos);
         float dist = delta.length();
         if (balls[i].isColliding(lFlipper)){
@@ -214,6 +215,7 @@ void updatePhysics(float dt) {
             float nv2 = (m1 * v1 + m2 * v2 - m1 * (v2 - v1) * cor) / (m1 + m2);
             balls[i].vel = balls[i].vel.plus(dir.times(nv1 - v1));
         }
+        */
     }
     
 }
@@ -244,6 +246,8 @@ void draw(){
     background(255);
     fill(255, 0, 0);
     stroke(0,0,0);
+
+    rectMode(CENTER);
     // draw borders
     strokeWeight(5);
     Line[] walls = {new Line(10.0, 10.0, 10.0, float(height - 10)), new Line(10.0, 10.0, float(width - 10), 10.0), new Line(float(width - 10), 10.0, float(width - 10), float(height - 10)), new Line(10, float(height - 10), float(width - 10), float(height - 10))};
@@ -258,7 +262,6 @@ void draw(){
     for (int i = 0; i < numCircs; i++){
       circle(circObs[i].pos.x, circObs[i].pos.y, circObs[i].r*2);
     }
-    rectMode(CENTER);
     for (int i = 0; i < numBoxes; i++){
       rect(boxObs[i].pos.x, boxObs[i].pos.y, boxObs[i].w, boxObs[i].h);
     }
@@ -273,15 +276,44 @@ void draw(){
 
     //draw the flippers
     if (leftPressed) {
+      rectMode(CORNER);
       pushMatrix();
-      translate(lFlipper.pos.x, lFlipper.pos.y - lFlipper.h/2);
+      translate(lFlipper.l1.x, lFlipper.l1.y); // translates origin to the correct pivot
       rotate(-(45*PI)/180);
-      rect(lFlipper.h*2, -(tan((45*PI)/180)*(lFlipper.w/2)), lFlipper.w, lFlipper.h);
+      lFlipper.updateAngle(-(45*PI)/180);
+      println(lFlipper.angle);
+      strokeWeight(5);
+      line(0, 0, abs(lFlipper.l1.x - lFlipper.l2.x), abs(lFlipper.l1.y - lFlipper.l2.y));
+      strokeWeight(1);
+      lFlipper.updateAngle((45*PI)/180);
       rotate((45*PI)/180);
-      translate(-(lFlipper.pos.x), -lFlipper.pos.y + lFlipper.h/2);
+      translate(-(lFlipper.l1.x), -lFlipper.l1.y);
       popMatrix();
+      rectMode(CENTER);
     } else {
-      rect(lFlipper.pos.x, lFlipper.pos.y, lFlipper.w, lFlipper.h);
+      strokeWeight(5);
+      line(lFlipper.l1.x, lFlipper.l1.y, lFlipper.l2.x, lFlipper.l2.y);
+      strokeWeight(1);
     }
-    rect(rFlipper.pos.x, rFlipper.pos.y, rFlipper.w, rFlipper.h);
+
+    if (rightPressed) {
+      rectMode(CORNER);
+      pushMatrix();
+      translate(rFlipper.l2.x, rFlipper.l2.y); // translates origin to the correct pivot
+      rotate((45*PI)/180);
+      rFlipper.updateAngle((45*PI)/180);
+      println(rFlipper.angle);
+      strokeWeight(5);
+      line((-1)*abs(rFlipper.l1.x - rFlipper.l2.x), abs(rFlipper.l1.y - rFlipper.l2.y), 0, 0);
+      strokeWeight(1);
+      rFlipper.updateAngle(-(45*PI)/180);
+      rotate(-(45*PI)/180);
+      translate(-(rFlipper.l2.x), -rFlipper.l2.y);
+      popMatrix();
+      rectMode(CENTER);
+    } else {
+      strokeWeight(5);
+      line(rFlipper.l1.x, rFlipper.l1.y, rFlipper.l2.x, rFlipper.l2.y);
+      strokeWeight(1);
+    }
 }

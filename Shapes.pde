@@ -68,12 +68,13 @@ public class Circle {
 
 public class Line {
     public Vec2 l1, l2;
-    public float length;
+    public float length, angle;
     
     public Line(float x1, float y1, float x2, float y2){
         this.l1 = new Vec2(x1, y1);
         this.l2 = new Vec2(x2, y2);
         this.length = this.l1.distanceTo(this.l2);
+        this.angle = atan((max(y1, y2) - min(y1, y2)) / (max(x1, x2) - min(x1, x2)));
     }
     
     // Inspiration for this came from lecture slides
@@ -150,4 +151,15 @@ public class Box {
         return true;
     }
     
+}
+
+public class Flipper extends Line {
+  public Flipper(float x1, float y1, float x2, float y2) {
+    super(x1, y1, x2, y2);
+    this.angle = angle;
+  }
+
+  public void updateAngle(float angle) {
+    this.angle += angle;
+  }
 }
