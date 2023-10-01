@@ -276,26 +276,25 @@ void draw(){
         ellipse(balls[i].pos.x, balls[i].pos.y, balls[i].r * 2, balls[i].r * 2);
     }
 
+    ellipse(balls[0].closestPoint(lFlipper).x, balls[0].closestPoint(lFlipper).y, 10,10); //make sure closestPoint is giving the right point
+
     //draw the flippers
     if (leftPressed) {
-      lFlipper_rotation += ((45*PI)/180)/5; // every dt add this much rotation
-      lFlipper_rotation = min(lFlipper_rotation, (45*PI)/180);
-      rectMode(CORNER);
-      pushMatrix();
-      translate(lFlipper.l1.x, lFlipper.l1.y); // translates origin to the correct pivot
-      rotate(-1 * lFlipper_rotation);
-      lFlipper.updateAngle(-1 * lFlipper_rotation);
-      // dt = ~0.017, rotation of flippers = (45*PI)/180 or 0.785 rad
-      // curr-rotation/((45*PI)/180) gives % rotation completed, update curr-totaion at logical steps
+      lFlipper.angular_vel = 10;
+      lFlipper_rotation += lFlipper.angular_vel * (1/frameRate);
+      //lFlipper_rotation += ((45*PI)/180)/5; // every dt add this much rotation
+      lFlipper_rotation = min(lFlipper_rotation, (50*PI)/180);
+      Vec2 nL2 = new Vec2((cos(lFlipper_rotation)*(lFlipper.l2.x - lFlipper.l1.x)) + (sin(lFlipper_rotation) * (lFlipper.l2.y - lFlipper.l1.y)) + lFlipper.l1.x, (-1 * sin(lFlipper_rotation)*(lFlipper.l2.x - lFlipper.l1.x)) + (cos(lFlipper_rotation) * (lFlipper.l2.y - lFlipper.l1.y)) + lFlipper.l1.y);
+      Vec2 l2Bak = lFlipper.l2;
+      lFlipper.l2 = nL2;
+      ellipse(lFlipper.l2.x, lFlipper.l2.y, 10,10);
       strokeWeight(5);
-      line(0, 0, abs(lFlipper.l1.x - lFlipper.l2.x), abs(lFlipper.l1.y - lFlipper.l2.y));
+      line(lFlipper.l1.x, lFlipper.l1.y, lFlipper.l2.x, lFlipper.l2.y);
       strokeWeight(1);
-      lFlipper.updateAngle(lFlipper_rotation);
-      rotate(lFlipper_rotation);
-      translate(-(lFlipper.l1.x), -lFlipper.l1.y);
-      popMatrix();
-      rectMode(CENTER);
+      //resets the line object l2 after drawing the line.. need to check for collisions before this
+      lFlipper.l2 = l2Bak;
     } else {
+      lFlipper = new Flipper((width/2)-110, height-75, (width/2)-30, height-25);
       lFlipper_rotation = 0.0;
       strokeWeight(5);
       line(lFlipper.l1.x, lFlipper.l1.y, lFlipper.l2.x, lFlipper.l2.y);
@@ -309,11 +308,9 @@ void draw(){
       pushMatrix();
       translate(rFlipper.l2.x, rFlipper.l2.y); // translates origin to the correct pivot
       rotate(rFlipper_rotation);
-      rFlipper.updateAngle(rFlipper_rotation);
       strokeWeight(5);
       line((-1)*abs(rFlipper.l1.x - rFlipper.l2.x), abs(rFlipper.l1.y - rFlipper.l2.y), 0, 0);
       strokeWeight(1);
-      rFlipper.updateAngle(-1 * rFlipper_rotation);
       rotate(-1 * rFlipper_rotation);
       translate(-(rFlipper.l2.x), -rFlipper.l2.y);
       popMatrix();

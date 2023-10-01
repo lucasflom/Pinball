@@ -154,12 +154,10 @@ public class Box {
 }
 
 public class Flipper extends Line {
+  public float angular_vel;
+
   public Flipper(float x1, float y1, float x2, float y2) {
     super(x1, y1, x2, y2);
-    this.angle = angle;
-  }
-
-  public void updateAngle(float angle) {
-    this.angle += angle;
+    this.angular_vel = 0;
   }
 }
