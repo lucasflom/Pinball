@@ -16,6 +16,8 @@ float cor = 0.75f; // Coefficient of Restitution
 Flipper lFlipper;
 Flipper rFlipper;
 
+float lFlipper_roation = 0.0;
+float rFlipper_rotation = 0.0;
 
 void resetBalls(){
     for (int i = 0; i < numBalls; i++) {
@@ -276,21 +278,24 @@ void draw(){
 
     //draw the flippers
     if (leftPressed) {
+      lFlipper_roation += ((45*PI)/180)/5;
       rectMode(CORNER);
       pushMatrix();
       translate(lFlipper.l1.x, lFlipper.l1.y); // translates origin to the correct pivot
-      rotate(-(45*PI)/180);
-      lFlipper.updateAngle(-(45*PI)/180);
-      println(lFlipper.angle);
+      rotate(-1 * lFlipper_roation);
+      lFlipper.updateAngle(-1 * lFlipper_roation);
+      // dt = ~0.017, rotation of flippers = (45*PI)/180 or 0.785 rad
+      // curr-rotation/((45*PI)/180) gives % rotation completed, update curr-totaion at logical steps
       strokeWeight(5);
       line(0, 0, abs(lFlipper.l1.x - lFlipper.l2.x), abs(lFlipper.l1.y - lFlipper.l2.y));
       strokeWeight(1);
-      lFlipper.updateAngle((45*PI)/180);
-      rotate((45*PI)/180);
+      lFlipper.updateAngle(lFlipper_roation);
+      rotate(lFlipper_roation);
       translate(-(lFlipper.l1.x), -lFlipper.l1.y);
       popMatrix();
       rectMode(CENTER);
     } else {
+      lFlipper_roation = 0.0;
       strokeWeight(5);
       line(lFlipper.l1.x, lFlipper.l1.y, lFlipper.l2.x, lFlipper.l2.y);
       strokeWeight(1);
@@ -302,7 +307,6 @@ void draw(){
       translate(rFlipper.l2.x, rFlipper.l2.y); // translates origin to the correct pivot
       rotate((45*PI)/180);
       rFlipper.updateAngle((45*PI)/180);
-      println(rFlipper.angle);
       strokeWeight(5);
       line((-1)*abs(rFlipper.l1.x - rFlipper.l2.x), abs(rFlipper.l1.y - rFlipper.l2.y), 0, 0);
       strokeWeight(1);
