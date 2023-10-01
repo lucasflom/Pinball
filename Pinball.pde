@@ -184,11 +184,10 @@ void updatePhysics(float dt) {
             }
         }
         // Ball-Flipper Collision (Needs fixing)
-        /*
-        Vec2 delta = balls[i].pos.minus(lFlipper.pos);
+        Vec2 delta = balls[i].pos.minus(balls[i].closestPoint(lFlipper));
         float dist = delta.length();
         if (balls[i].isColliding(lFlipper)){
-            float overlap = (dist - balls[i].r - (lFlipper.pos.distanceTo(balls[i].closestPoint(lFlipper)))); // Include the box's side of it too
+            float overlap = (dist - balls[i].r);
             balls[i].pos.subtract(delta.normalized().times(overlap));
 
             // Collision
@@ -201,10 +200,11 @@ void updatePhysics(float dt) {
             float nv2 = (m1 * v1 + m2 * v2 - m1 * (v2 - v1) * cor) / (m1 + m2);
             balls[i].vel = balls[i].vel.plus(dir.times(nv1 - v1));
         }
-        delta = balls[i].pos.minus(rFlipper.pos);
+
+        delta = balls[i].pos.minus(balls[i].closestPoint(rFlipper));
         dist = delta.length();
         if (balls[i].isColliding(rFlipper)){
-            float overlap = (dist - balls[i].r - (rFlipper.pos.distanceTo(balls[i].closestPoint(rFlipper)))); // Include the box's side of it too
+            float overlap = (dist - balls[i].r);
             balls[i].pos.subtract(delta.normalized().times(overlap));
 
             // Collision
@@ -217,7 +217,6 @@ void updatePhysics(float dt) {
             float nv2 = (m1 * v1 + m2 * v2 - m1 * (v2 - v1) * cor) / (m1 + m2);
             balls[i].vel = balls[i].vel.plus(dir.times(nv1 - v1));
         }
-        */
     }
     
 }
@@ -244,10 +243,60 @@ void keyReleased(){
 }
 
 void draw(){
-    updatePhysics(1/frameRate);
     background(255);
     fill(255, 0, 0);
     stroke(0,0,0);
+    //draw the flippers
+    Vec2 l2Bak = new Vec2((width/2)-30, height-25);
+    Vec2 l1Bak = new Vec2((width/2)+60, height-25);
+    if (leftPressed) {
+      lFlipper.angular_vel = 10;
+      lFlipper_rotation += lFlipper.angular_vel * (1/frameRate);
+      //lFlipper_rotation += ((45*PI)/180)/5; // every dt add this much rotation
+      lFlipper_rotation = min(lFlipper_rotation, (50*PI)/180);
+      Vec2 nL2 = new Vec2((cos(lFlipper_rotation)*(lFlipper.l2.x - lFlipper.l1.x)) + (sin(lFlipper_rotation) * (lFlipper.l2.y - lFlipper.l1.y)) + lFlipper.l1.x, (-1 * sin(lFlipper_rotation)*(lFlipper.l2.x - lFlipper.l1.x)) + (cos(lFlipper_rotation) * (lFlipper.l2.y - lFlipper.l1.y)) + lFlipper.l1.y);
+      l2Bak = lFlipper.l2;
+      lFlipper.l2 = nL2;
+      ellipse(lFlipper.l2.x, lFlipper.l2.y, 10,10);
+      strokeWeight(5);
+      line(lFlipper.l1.x, lFlipper.l1.y, lFlipper.l2.x, lFlipper.l2.y);
+      strokeWeight(1);
+      //resets the line object l2 after drawing the line.. need to check for collisions before this
+    } else {
+      lFlipper = new Flipper((width/2)-110, height-75, (width/2)-30, height-25);
+      lFlipper_rotation = 0.0;
+      strokeWeight(5);
+      line(lFlipper.l1.x, lFlipper.l1.y, lFlipper.l2.x, lFlipper.l2.y);
+      strokeWeight(1);
+    }
+
+    if (rightPressed) {
+      rFlipper.angular_vel = 10;
+      rFlipper_rotation += rFlipper.angular_vel * (1/frameRate);
+      rFlipper_rotation = min(rFlipper_rotation, (50*PI)/180);
+      Vec2 nL1 = new Vec2((cos(rFlipper_rotation)*(rFlipper.l1.x - rFlipper.l2.x)) + (-1 * sin(rFlipper_rotation) * (rFlipper.l1.y - rFlipper.l2.y)) + rFlipper.l2.x, (sin(rFlipper_rotation)*(rFlipper.l1.x - rFlipper.l2.x)) + (cos(rFlipper_rotation) * (rFlipper.l1.y - rFlipper.l2.y)) + rFlipper.l2.y);
+      l1Bak = rFlipper.l1;
+      rFlipper.l1 = nL1;
+      strokeWeight(5);
+      line(rFlipper.l1.x, rFlipper.l1.y, rFlipper.l2.x, rFlipper.l2.y);
+      strokeWeight(1);
+      //resets the line object l2 after drawing the line.. need to check for collisions before this
+    } else {
+      rFlipper = new Flipper((width/2)+60, height-25, (width/2)+140, height-75);    
+      rFlipper_rotation = 0.0;
+      strokeWeight(5);
+      line(rFlipper.l1.x, rFlipper.l1.y, rFlipper.l2.x, rFlipper.l2.y);
+      strokeWeight(1);
+    }
+
+    updatePhysics(1/frameRate);
+
+    if (leftPressed) {
+      lFlipper.l2 = l2Bak;
+    }
+    if (rightPressed) {
+      rFlipper.l1 = l1Bak;
+    }
 
     rectMode(CENTER);
     // draw borders
@@ -274,51 +323,5 @@ void draw(){
     // draw the balls
     for (int i = 0; i < numBalls; i++) {
         ellipse(balls[i].pos.x, balls[i].pos.y, balls[i].r * 2, balls[i].r * 2);
-    }
-
-    ellipse(balls[0].closestPoint(lFlipper).x, balls[0].closestPoint(lFlipper).y, 10,10); //make sure closestPoint is giving the right point
-
-    //draw the flippers
-    if (leftPressed) {
-      lFlipper.angular_vel = 10;
-      lFlipper_rotation += lFlipper.angular_vel * (1/frameRate);
-      //lFlipper_rotation += ((45*PI)/180)/5; // every dt add this much rotation
-      lFlipper_rotation = min(lFlipper_rotation, (50*PI)/180);
-      Vec2 nL2 = new Vec2((cos(lFlipper_rotation)*(lFlipper.l2.x - lFlipper.l1.x)) + (sin(lFlipper_rotation) * (lFlipper.l2.y - lFlipper.l1.y)) + lFlipper.l1.x, (-1 * sin(lFlipper_rotation)*(lFlipper.l2.x - lFlipper.l1.x)) + (cos(lFlipper_rotation) * (lFlipper.l2.y - lFlipper.l1.y)) + lFlipper.l1.y);
-      Vec2 l2Bak = lFlipper.l2;
-      lFlipper.l2 = nL2;
-      ellipse(lFlipper.l2.x, lFlipper.l2.y, 10,10);
-      strokeWeight(5);
-      line(lFlipper.l1.x, lFlipper.l1.y, lFlipper.l2.x, lFlipper.l2.y);
-      strokeWeight(1);
-      //resets the line object l2 after drawing the line.. need to check for collisions before this
-      lFlipper.l2 = l2Bak;
-    } else {
-      lFlipper = new Flipper((width/2)-110, height-75, (width/2)-30, height-25);
-      lFlipper_rotation = 0.0;
-      strokeWeight(5);
-      line(lFlipper.l1.x, lFlipper.l1.y, lFlipper.l2.x, lFlipper.l2.y);
-      strokeWeight(1);
-    }
-
-    if (rightPressed) {
-      rFlipper_rotation += ((45*PI)/180)/5;
-      rFlipper_rotation = min(rFlipper_rotation, (45*PI)/180);
-      rectMode(CORNER);
-      pushMatrix();
-      translate(rFlipper.l2.x, rFlipper.l2.y); // translates origin to the correct pivot
-      rotate(rFlipper_rotation);
-      strokeWeight(5);
-      line((-1)*abs(rFlipper.l1.x - rFlipper.l2.x), abs(rFlipper.l1.y - rFlipper.l2.y), 0, 0);
-      strokeWeight(1);
-      rotate(-1 * rFlipper_rotation);
-      translate(-(rFlipper.l2.x), -rFlipper.l2.y);
-      popMatrix();
-      rectMode(CENTER);
-    } else {
-      rFlipper_rotation = 0.0;
-      strokeWeight(5);
-      line(rFlipper.l1.x, rFlipper.l1.y, rFlipper.l2.x, rFlipper.l2.y);
-      strokeWeight(1);
     }
 }
