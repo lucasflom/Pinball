@@ -16,7 +16,7 @@ float cor = 0.75f; // Coefficient of Restitution
 Flipper lFlipper;
 Flipper rFlipper;
 
-float lFlipper_roation = 0.0;
+float lFlipper_rotation = 0.0;
 float rFlipper_rotation = 0.0;
 
 void resetBalls(){
@@ -278,44 +278,48 @@ void draw(){
 
     //draw the flippers
     if (leftPressed) {
-      lFlipper_roation += ((45*PI)/180)/5;
+      lFlipper_rotation += ((45*PI)/180)/5; // every dt add this much rotation
+      lFlipper_rotation = min(lFlipper_rotation, (45*PI)/180);
       rectMode(CORNER);
       pushMatrix();
       translate(lFlipper.l1.x, lFlipper.l1.y); // translates origin to the correct pivot
-      rotate(-1 * lFlipper_roation);
-      lFlipper.updateAngle(-1 * lFlipper_roation);
+      rotate(-1 * lFlipper_rotation);
+      lFlipper.updateAngle(-1 * lFlipper_rotation);
       // dt = ~0.017, rotation of flippers = (45*PI)/180 or 0.785 rad
       // curr-rotation/((45*PI)/180) gives % rotation completed, update curr-totaion at logical steps
       strokeWeight(5);
       line(0, 0, abs(lFlipper.l1.x - lFlipper.l2.x), abs(lFlipper.l1.y - lFlipper.l2.y));
       strokeWeight(1);
-      lFlipper.updateAngle(lFlipper_roation);
-      rotate(lFlipper_roation);
+      lFlipper.updateAngle(lFlipper_rotation);
+      rotate(lFlipper_rotation);
       translate(-(lFlipper.l1.x), -lFlipper.l1.y);
       popMatrix();
       rectMode(CENTER);
     } else {
-      lFlipper_roation = 0.0;
+      lFlipper_rotation = 0.0;
       strokeWeight(5);
       line(lFlipper.l1.x, lFlipper.l1.y, lFlipper.l2.x, lFlipper.l2.y);
       strokeWeight(1);
     }
 
     if (rightPressed) {
+      rFlipper_rotation += ((45*PI)/180)/5;
+      rFlipper_rotation = min(rFlipper_rotation, (45*PI)/180);
       rectMode(CORNER);
       pushMatrix();
       translate(rFlipper.l2.x, rFlipper.l2.y); // translates origin to the correct pivot
-      rotate((45*PI)/180);
-      rFlipper.updateAngle((45*PI)/180);
+      rotate(rFlipper_rotation);
+      rFlipper.updateAngle(rFlipper_rotation);
       strokeWeight(5);
       line((-1)*abs(rFlipper.l1.x - rFlipper.l2.x), abs(rFlipper.l1.y - rFlipper.l2.y), 0, 0);
       strokeWeight(1);
-      rFlipper.updateAngle(-(45*PI)/180);
-      rotate(-(45*PI)/180);
+      rFlipper.updateAngle(-1 * rFlipper_rotation);
+      rotate(-1 * rFlipper_rotation);
       translate(-(rFlipper.l2.x), -rFlipper.l2.y);
       popMatrix();
       rectMode(CENTER);
     } else {
+      rFlipper_rotation = 0.0;
       strokeWeight(5);
       line(rFlipper.l1.x, rFlipper.l1.y, rFlipper.l2.x, rFlipper.l2.y);
       strokeWeight(1);
