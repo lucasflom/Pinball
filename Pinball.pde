@@ -1,6 +1,7 @@
 int numBalls = 4;
 int ballIndex = 0;
 int score = 0;
+int lostBalls = 0;
 
 String fname = "level2.txt";
 PImage bg,ballImage,circImage,circImage2;
@@ -26,6 +27,7 @@ float rFlipper_rotation = 0.0;
 void resetBalls(){
     ballIndex = 0;
     score = 0;
+    lostBalls = 0;
     for (int i = 0; i < numBalls; i++) {
         Vec2 pos = new Vec2(-100, -100);
         Vec2 vel = new Vec2(0, 0);
@@ -106,8 +108,13 @@ void updatePhysics(float dt) {
             balls[i].vel.y *= -cor;
         }
         if (balls[i].pos.y > height - balls[i].r - 10){
-            balls[i].pos.y = height - balls[i].r - 10;
-            balls[i].vel.y *= -cor;
+            lostBalls ++;
+            Vec2 pos = new Vec2(980, -100);
+            Vec2 vel = new Vec2(0, 0);
+            int rad = 6;
+            float mass = ((3.141592653 * (rad * rad))/rad) * ((3.141592653 * (rad * rad))/rad);
+            balls[i] = new Circle(pos, rad, mass, vel);
+
         }
 
         // Ball-Ball Collision
@@ -329,7 +336,7 @@ void draw(){
     // draw borders
     strokeWeight(5);
     stroke(0,0,0);
-    Line[] walls = {new Line(10.0, 10.0, 10.0, float(height - 10)), new Line(10.0, 10.0, float(width - 10), 10.0), new Line(float(width - 10), 10.0, float(width - 10), float(height - 10)), new Line(10, float(height - 10), float(width - 10), float(height - 10))};
+    Line[] walls = {new Line(10.0, 10.0, 10.0, float(height - 10)), new Line(10.0, 10.0, float(width - 10), 10.0), new Line(float(width - 10), 10.0, float(width - 10), float(height - 10)), new Line(float(width - 45), float(height - 10), float(width - 10), float(height - 10))};
     strokeWeight(1);
 
 	// draw the walls
@@ -371,8 +378,15 @@ void draw(){
     }
 
     // draw the score
-    textSize(64);
-    textAlign(LEFT);
-    text("SCORE", 800, 50);
-    text(str(score), 850, 100);
+    if (lostBalls < numBalls){
+        textSize(64);
+        textAlign(LEFT);
+        text("SCORE", 800, 50);
+        text(str(score), 850, 100);
+    } else {
+        fill(255);
+        stroke(100);
+        text("FINAL SCORE", 375, 100);
+        text(str(score), 450, 150);
+    }
 }
