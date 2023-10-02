@@ -1,4 +1,5 @@
-int numBalls = 2;
+int numBalls = 4;
+int ballIndex = 0;
 
 String fname = "level1.txt";
 
@@ -20,13 +21,29 @@ float lFlipper_rotation = 0.0;
 float rFlipper_rotation = 0.0;
 
 void resetBalls(){
+    ballIndex = 0;
     for (int i = 0; i < numBalls; i++) {
-        Vec2 pos = new Vec2(random(width/3, (2*width)/3), 25);
-        Vec2 vel = new Vec2(50, 0);
+        Vec2 pos = new Vec2(-100, -100);
+        Vec2 vel = new Vec2(0, 0);
         int rad = 15;
         float mass = ((3.141592653 * (rad * rad))/rad) * ((3.141592653 * (rad * rad))/rad);
         balls[i] = new Circle(pos, rad, mass, vel);
     }
+}
+
+void launchBalls(){
+    println("Firing balls");
+    if (ballIndex < numBalls){
+        Vec2 pos = new Vec2(975, 975);
+        Vec2 vel = new Vec2(0, random(-1500, -1200));
+        int rad = 15;
+        float mass = ((3.141592653 * (rad * rad))/rad) * ((3.141592653 * (rad * rad))/rad);
+        balls[ballIndex] = new Circle(pos, rad, mass, vel);
+        ballIndex++;
+        println("Ball fired");
+    }
+    
+
 }
 
 void setup() {
@@ -237,7 +254,7 @@ void keyReleased(){
   }
   if (keyCode == LEFT) leftPressed = false;
   if (keyCode == RIGHT) rightPressed = false;
-  if (keyCode == UP) upPressed = false; 
+  if (keyCode == UP) launchBalls(); 
   if (keyCode == DOWN) downPressed = false;
   if (keyCode == SHIFT) shiftPressed = false;
 }
