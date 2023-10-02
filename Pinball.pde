@@ -1,7 +1,10 @@
 int numBalls = 4;
 int ballIndex = 0;
+int score = 0;
 
 String fname = "level1.txt";
+PImage bg,ballImage,circImage,circImage2;
+
 
 Circle[] balls = new Circle[numBalls];
 
@@ -22,6 +25,7 @@ float rFlipper_rotation = 0.0;
 
 void resetBalls(){
     ballIndex = 0;
+    score = 0;
     for (int i = 0; i < numBalls; i++) {
         Vec2 pos = new Vec2(-100, -100);
         Vec2 vel = new Vec2(0, 0);
@@ -40,8 +44,6 @@ void launchBalls(){
         balls[ballIndex] = new Circle(pos, rad, mass, vel);
         ballIndex++;
     }
-    
-
 }
 
 void setup() {
@@ -58,6 +60,11 @@ void setup() {
     numCircs = int(lines[0].substring(3));
     numLines = int(lines[numCircs+1].substring(3));
     numBoxes = int(lines[numCircs+numLines+2].substring(3));
+
+    bg = loadImage("space.jpg");
+    ballImage = loadImage("comet.jpg");
+    circImage = loadImage("miniplanet.jpg");
+    circImage2 = loadImage("planet2mini.jpg");
 
     circObs = new Circle[numCircs];
     for (int i = 1; i < (numCircs+1); i++){
@@ -145,7 +152,7 @@ void updatePhysics(float dt) {
                 // Move out of collision
                 float overlap = 0.5f * (dist - balls[i].r - circObs[j].r);
                 balls[i].pos.subtract(delta.normalized().times(overlap)); // This line may need to be changed to account for the obstacle not moving
-                
+                score += 100;
                 // Collision
                 Vec2 dir = delta.normalized();
                 float v1 = dot(balls[i].vel, dir);
@@ -186,7 +193,7 @@ void updatePhysics(float dt) {
                 // Move out of collision
                 float overlap = (dist - balls[i].r - (boxObs[j].pos.distanceTo(balls[i].closestPoint(boxObs[j])))); // Include the box's side of it too
                 balls[i].pos.subtract(delta.normalized().times(overlap));
-
+                score += 100;
                 // Collision
                 Vec2 dir = delta.normalized();
                 float v1 = dot(balls[i].vel, dir);
@@ -264,9 +271,9 @@ void keyReleased(){
 }
 
 void draw(){
-    background(255);
+    background(bg);
     fill(255, 0, 0);
-    stroke(0,0,0);
+    stroke(255,255,255);
     //draw the flippers
     Vec2 l2Bak = new Vec2((width/2)-30, height-25);
     Vec2 l1Bak = new Vec2((width/2)+60, height-25);
@@ -278,7 +285,6 @@ void draw(){
       Vec2 nL2 = new Vec2((cos(lFlipper_rotation)*(lFlipper.l2.x - lFlipper.l1.x)) + (sin(lFlipper_rotation) * (lFlipper.l2.y - lFlipper.l1.y)) + lFlipper.l1.x, (-1 * sin(lFlipper_rotation)*(lFlipper.l2.x - lFlipper.l1.x)) + (cos(lFlipper_rotation) * (lFlipper.l2.y - lFlipper.l1.y)) + lFlipper.l1.y);
       l2Bak = lFlipper.l2;
       lFlipper.l2 = nL2;
-      ellipse(lFlipper.l2.x, lFlipper.l2.y, 10,10);
       strokeWeight(5);
       line(lFlipper.l1.x, lFlipper.l1.y, lFlipper.l2.x, lFlipper.l2.y);
       strokeWeight(1);
@@ -322,6 +328,7 @@ void draw(){
     rectMode(CENTER);
     // draw borders
     strokeWeight(5);
+    stroke(0,0,0);
     Line[] walls = {new Line(10.0, 10.0, 10.0, float(height - 10)), new Line(10.0, 10.0, float(width - 10), 10.0), new Line(float(width - 10), 10.0, float(width - 10), float(height - 10)), new Line(10, float(height - 10), float(width - 10), float(height - 10))};
     strokeWeight(1);
 
@@ -329,20 +336,40 @@ void draw(){
     for (int i = 0; i < walls.length; i++) {
         line(walls[i].l1.x, walls[i].l1.y, walls[i].l2.x, walls[i].l2.y);
     }
-
+    stroke(255,255,255);
     // draw the obstacles
+    PGraphics maskImage;
     for (int i = 0; i < numCircs; i++){
-      circle(circObs[i].pos.x, circObs[i].pos.y, circObs[i].r*2);
+      maskImage = createGraphics(50,50);
+      maskImage.beginDraw();
+      maskImage.smooth();
+      maskImage.fill(255);
+      maskImage.circle(circObs[i].pos.x, circObs[i].pos.y, circObs[i].r*2);
+      maskImage.endDraw();
+      circImage.mask(maskImage);
+      //circle(circObs[i].pos.x, circObs[i].pos.y, circObs[i].r*2);
+      image(circImage, circObs[i].pos.x, circObs[i].pos.y);
     }
+    fill(120, 81, 169);
+    stroke(120, 81, 169);
     for (int i = 0; i < numBoxes; i++){
       rect(boxObs[i].pos.x, boxObs[i].pos.y, boxObs[i].w, boxObs[i].h);
     }
+    stroke(0, 0, 0);
     for (int i = 0; i < numLines; i++){
       line(lineObs[i].l1.x, lineObs[i].l1.y, lineObs[i].l2.x, lineObs[i].l2.y);
     }
 
     // draw the balls
     for (int i = 0; i < numBalls; i++) {
+
         ellipse(balls[i].pos.x, balls[i].pos.y, balls[i].r * 2, balls[i].r * 2);
+
     }
+
+    // draw the score
+    textSize(64);
+    textAlign(LEFT);
+    text("SCORE", 800, 50);
+    text(str(score), 850, 100);
 }
