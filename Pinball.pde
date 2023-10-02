@@ -250,23 +250,24 @@ void updatePhysics(float dt) {
         // Ball-Flipper Collision (Needs fixing)
         Vec2 delta = balls[i].pos.minus(balls[i].closestPoint(lFlipper));
         float dist = delta.length();
+        //line(balls[i].closestPoint(lFlipper).x, balls[i].closestPoint(lFlipper).y, balls[i].pos.x, balls[i].pos.y);
         if (balls[i].isColliding(lFlipper)){
             float overlap = (dist - balls[i].r);
             balls[i].pos = delta.normalized().times(balls[i].r).plus(balls[i].closestPoint(lFlipper));
             //.subtract(delta.normalized().times(overlap));
-            
             // Collision
             Vec2 dir = delta.normalized();
             float v1 = dot(balls[i].vel, dir);
             // Flipper velocity
-            Vec2 radius = balls[i].closestPoint(lFlipper).minus(lFlipper.l1);
-            Vec2 surfaceVel = radius.times(lFlipper.angular_vel*2);
+            Vec2 radius = lFlipper.l1.minus(balls[i].closestPoint(lFlipper));
+            Vec2 surfaceVel = new Vec2(-1*radius.y, radius.x).times(lFlipper.angular_vel);
             float v2 = dot(surfaceVel, dir);
             float m1 = balls[i].mass;
             float m2 = 10000000.0; // The mass shouldn't matter?
             float nv1 = (m1 * v1 + m2 * v2 - m2 * (v1 - v2) * cor) / (m1 + m2);
             float nv2 = (m1 * v1 + m2 * v2 - m1 * (v2 - v1) * cor) / (m1 + m2);
-            balls[i].vel = (balls[i].vel.plus(dir.times((nv1 - v1))));
+            //balls[i].vel.plus(dir.times(v2*2));
+            balls[i].vel = balls[i].vel.plus(dir.times((nv1 - v1)));
         }
 
         delta = balls[i].pos.minus(balls[i].closestPoint(rFlipper));
@@ -280,8 +281,8 @@ void updatePhysics(float dt) {
             Vec2 dir = delta.normalized();
             float v1 = dot(balls[i].vel, dir);
             // Flipper velocity
-            Vec2 radius = balls[i].closestPoint(rFlipper).minus(rFlipper.l2);
-            Vec2 surfaceVel = radius.times(rFlipper.angular_vel*2);
+            Vec2 radius = rFlipper.l2.minus(balls[i].closestPoint(rFlipper));
+            Vec2 surfaceVel = new Vec2(-1*radius.y, radius.x).times(rFlipper.angular_vel);
             float v2 = dot(surfaceVel, dir);
             float m1 = balls[i].mass;
             float m2 = 10000000.0; // The mass shouldn't matter?
