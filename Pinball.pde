@@ -179,11 +179,12 @@ void updatePhysics(float dt) {
                 float overlap = 0.5f * (dist - balls[i].r - circObs[j].r);
                 balls[i].pos.subtract(delta.normalized().times(overlap)); // This line may need to be changed to account for the obstacle not moving
                 if (j == objInt){
-                    brink.play();
                     if (objHit < 3){
+                        brink.play();
                         objHit++;
                         score += 50;
                     } else {
+                        bong.play();
                         objHit = 0;
                         score += 500;
                     }
@@ -394,7 +395,7 @@ void draw(){
     //   maskImage.endDraw();
     //   circImage.mask(maskImage);
     if (i == objInt){
-            fill(255,242,0);
+            fill(165+(objHit * 30),242,120-(objHit*40));
         } else {
             fill(65, 74, 76);
         }

@@ -39,8 +39,16 @@ Create a scene format that allows you to specify the layout of the pinball obsta
 then load the scene from a file. For full credit, you must demonstrate loading at least
 two different scenes/table layouts.
 
- - Textured Obstacles (5) (**NOT IMPLEMENTED FULLY**)
-Use textures or sprite to display an image on some of the obstacles in the simulation.
+ - **Sound Effects** (5)
+Have sound effects that are triggered by the balls’ interaction with objects.
+
+- **Progressive Objectives** (5)
+Implement an objective system where the user has different objects as targets that
+they must chain together to unlock some extra reward or effect. E.g., a series of
+targets that pop-up after each is hit, areas on the floor that must be hit in a certain
+order to unlock multi-ball, or maybe knocking over three special targets triggers a
+special effect or triggers a particle system animation and gives a score multiplier for
+the duration of the animation.
 
 ## Level file format
 The levels will be lists of shapes that are needed to populate the screen. As of now they are in the format of Shape(C, L, B): Data(formats below).
