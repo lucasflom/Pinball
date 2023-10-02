@@ -104,6 +104,7 @@ void updatePhysics(float dt) {
 
     // Update ball ballPositions
     for (int i = 0; i < numBalls; i++){
+
         balls[i].vel.add(new Vec2(0,9.81));
         balls[i].pos.add(balls[i].vel.times(dt));
 
@@ -249,7 +250,8 @@ void updatePhysics(float dt) {
         float dist = delta.length();
         if (balls[i].isColliding(lFlipper)){
             float overlap = (dist - balls[i].r);
-            balls[i].pos.subtract(delta.normalized().times(overlap));
+            balls[i].pos = delta.normalized().times(balls[i].r).plus(balls[i].closestPoint(lFlipper));
+            //.subtract(delta.normalized().times(overlap));
             
             // Collision
             Vec2 dir = delta.normalized();
@@ -262,14 +264,15 @@ void updatePhysics(float dt) {
             float m2 = 100000.0; // The mass shouldn't matter?
             float nv1 = (m1 * v1 + m2 * v2 - m2 * (v1 - v2) * cor) / (m1 + m2);
             float nv2 = (m1 * v1 + m2 * v2 - m1 * (v2 - v1) * cor) / (m1 + m2);
-            balls[i].vel = balls[i].vel.plus(dir.times(nv1 - v1));
+            balls[i].vel = (balls[i].vel.plus(dir.times((nv1 - v1))));
         }
 
         delta = balls[i].pos.minus(balls[i].closestPoint(rFlipper));
         dist = delta.length();
         if (balls[i].isColliding(rFlipper)){
             float overlap = (dist - balls[i].r);
-            balls[i].pos.subtract(delta.normalized().times(overlap));
+            balls[i].pos = delta.normalized().times(balls[i].r).plus(balls[i].closestPoint(rFlipper));
+            //balls[i].pos.subtract(delta.normalized().times(overlap));
             
             // Collision
             Vec2 dir = delta.normalized();
@@ -282,7 +285,7 @@ void updatePhysics(float dt) {
             float m2 = 100000.0; // The mass shouldn't matter?
             float nv1 = (m1 * v1 + m2 * v2 - m2 * (v1 - v2) * cor) / (m1 + m2);
             float nv2 = (m1 * v1 + m2 * v2 - m1 * (v2 - v1) * cor) / (m1 + m2);
-            balls[i].vel = balls[i].vel.plus(dir.times(nv1 - v1));
+            balls[i].vel = balls[i].vel.plus(dir.times((nv1 - v1)));
         }
     }
     
@@ -317,7 +320,7 @@ void draw(){
     Vec2 l2Bak = new Vec2((width/2)-30, height-25);
     Vec2 l1Bak = new Vec2((width/2)+60, height-25);
     if (leftPressed) {
-      lFlipper.angular_vel = 10;
+      lFlipper.angular_vel = 5;
       lFlipper_rotation += lFlipper.angular_vel * (1/frameRate);
       //lFlipper_rotation += ((45*PI)/180)/5; // every dt add this much rotation
       lFlipper_rotation = min(lFlipper_rotation, (50*PI)/180);
@@ -337,7 +340,7 @@ void draw(){
     }
 
     if (rightPressed) {
-      rFlipper.angular_vel = 10;
+      rFlipper.angular_vel = 5;
       rFlipper_rotation += rFlipper.angular_vel * (1/frameRate);
       rFlipper_rotation = min(rFlipper_rotation, (50*PI)/180);
       Vec2 nL1 = new Vec2((cos(rFlipper_rotation)*(rFlipper.l1.x - rFlipper.l2.x)) + (-1 * sin(rFlipper_rotation) * (rFlipper.l1.y - rFlipper.l2.y)) + rFlipper.l2.x, (sin(rFlipper_rotation)*(rFlipper.l1.x - rFlipper.l2.x)) + (cos(rFlipper_rotation) * (rFlipper.l1.y - rFlipper.l2.y)) + rFlipper.l2.y);
@@ -355,7 +358,7 @@ void draw(){
       strokeWeight(1);
     }
 
-    updatePhysics(1/frameRate);
+    updatePhysics(1/(frameRate*1.5));
 
     if (leftPressed) {
       lFlipper.l2 = l2Bak;
