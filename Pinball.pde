@@ -260,7 +260,7 @@ void updatePhysics(float dt) {
             float v1 = dot(balls[i].vel, dir);
             // Flipper velocity
             Vec2 radius = balls[i].closestPoint(lFlipper).minus(lFlipper.l1);
-            Vec2 surfaceVel = radius.times(lFlipper.angular_vel);
+            Vec2 surfaceVel = radius.times(lFlipper.angular_vel*2);
             float v2 = dot(surfaceVel, dir);
             float m1 = balls[i].mass;
             float m2 = 10000000.0; // The mass shouldn't matter?
@@ -281,7 +281,7 @@ void updatePhysics(float dt) {
             float v1 = dot(balls[i].vel, dir);
             // Flipper velocity
             Vec2 radius = balls[i].closestPoint(rFlipper).minus(rFlipper.l2);
-            Vec2 surfaceVel = radius.times(rFlipper.angular_vel);
+            Vec2 surfaceVel = radius.times(rFlipper.angular_vel*2);
             float v2 = dot(surfaceVel, dir);
             float m1 = balls[i].mass;
             float m2 = 10000000.0; // The mass shouldn't matter?
@@ -322,10 +322,10 @@ void draw(){
     Vec2 l2Bak = new Vec2((width/2)-30, height-25);
     Vec2 l1Bak = new Vec2((width/2)+60, height-25);
     if (leftPressed) {
-      lFlipper.angular_vel = 5;
+      lFlipper.angular_vel = 8;
       lFlipper_rotation += lFlipper.angular_vel * (1/frameRate);
       //lFlipper_rotation += ((45*PI)/180)/5; // every dt add this much rotation
-      lFlipper_rotation = min(lFlipper_rotation, (90*PI)/180);
+      lFlipper_rotation = min(lFlipper_rotation, (80*PI)/180);
       Vec2 nL2 = new Vec2((cos(lFlipper_rotation)*(lFlipper.l2.x - lFlipper.l1.x)) + (sin(lFlipper_rotation) * (lFlipper.l2.y - lFlipper.l1.y)) + lFlipper.l1.x, (-1 * sin(lFlipper_rotation)*(lFlipper.l2.x - lFlipper.l1.x)) + (cos(lFlipper_rotation) * (lFlipper.l2.y - lFlipper.l1.y)) + lFlipper.l1.y);
       l2Bak = lFlipper.l2;
       lFlipper.l2 = nL2;
@@ -342,9 +342,9 @@ void draw(){
     }
 
     if (rightPressed) {
-      rFlipper.angular_vel = 5;
+      rFlipper.angular_vel = 8;
       rFlipper_rotation += rFlipper.angular_vel * (1/frameRate);
-      rFlipper_rotation = min(rFlipper_rotation, (90*PI)/180);
+      rFlipper_rotation = min(rFlipper_rotation, (80*PI)/180);
       Vec2 nL1 = new Vec2((cos(rFlipper_rotation)*(rFlipper.l1.x - rFlipper.l2.x)) + (-1 * sin(rFlipper_rotation) * (rFlipper.l1.y - rFlipper.l2.y)) + rFlipper.l2.x, (sin(rFlipper_rotation)*(rFlipper.l1.x - rFlipper.l2.x)) + (cos(rFlipper_rotation) * (rFlipper.l1.y - rFlipper.l2.y)) + rFlipper.l2.y);
       l1Bak = rFlipper.l1;
       rFlipper.l1 = nL1;
