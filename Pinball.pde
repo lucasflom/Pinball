@@ -32,15 +32,13 @@ void resetBalls(){
 }
 
 void launchBalls(){
-    println("Firing balls");
     if (ballIndex < numBalls){
         Vec2 pos = new Vec2(975, 975);
         Vec2 vel = new Vec2(0, random(-1500, -1200));
         int rad = 15;
-        float mass = ((3.141592653 * (rad * rad))/rad) * ((3.141592653 * (rad * rad))/rad);
+        float mass = (2);
         balls[ballIndex] = new Circle(pos, rad, mass, vel);
         ballIndex++;
-        println("Ball fired");
     }
     
 
@@ -206,11 +204,14 @@ void updatePhysics(float dt) {
         if (balls[i].isColliding(lFlipper)){
             float overlap = (dist - balls[i].r);
             balls[i].pos.subtract(delta.normalized().times(overlap));
-
+            
             // Collision
             Vec2 dir = delta.normalized();
             float v1 = dot(balls[i].vel, dir);
-            float v2 = 0.0; // The obstacle never has a velocity
+            // Flipper velocity
+            Vec2 radius = balls[i].closestPoint(lFlipper).minus(lFlipper.l1);
+            Vec2 surfaceVel = radius.times(lFlipper.angular_vel);
+            float v2 = dot(surfaceVel, dir);
             float m1 = balls[i].mass;
             float m2 = 100000.0; // The mass shouldn't matter?
             float nv1 = (m1 * v1 + m2 * v2 - m2 * (v1 - v2) * cor) / (m1 + m2);
@@ -223,11 +224,14 @@ void updatePhysics(float dt) {
         if (balls[i].isColliding(rFlipper)){
             float overlap = (dist - balls[i].r);
             balls[i].pos.subtract(delta.normalized().times(overlap));
-
+            
             // Collision
             Vec2 dir = delta.normalized();
             float v1 = dot(balls[i].vel, dir);
-            float v2 = 0.0; // The obstacle never has a velocity
+            // Flipper velocity
+            Vec2 radius = balls[i].closestPoint(lFlipper).minus(lFlipper.l1);
+            Vec2 surfaceVel = radius.times(lFlipper.angular_vel);
+            float v2 = dot(surfaceVel, dir);
             float m1 = balls[i].mass;
             float m2 = 100000.0; // The mass shouldn't matter?
             float nv1 = (m1 * v1 + m2 * v2 - m2 * (v1 - v2) * cor) / (m1 + m2);
