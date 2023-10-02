@@ -1,5 +1,6 @@
 import processing.sound.*;
 
+Sound s; // For volume control
 SoundFile bong, brink, bomp, youDidIt;
 
 int numBalls = 4;
@@ -49,7 +50,7 @@ void resetBalls(){
 void launchBalls(){
     if (ballIndex < numBalls){
         Vec2 pos = new Vec2(975, 975);
-        Vec2 vel = new Vec2(0, random(-1500, -1200));
+        Vec2 vel = new Vec2(0, random(-1700, -1400));
         int rad = 15;
         float mass = (2);
         balls[ballIndex] = new Circle(pos, rad, mass, vel);
@@ -62,7 +63,8 @@ void setup() {
     smooth();
     noStroke();
     resetBalls();
-
+    s = new Sound(this);
+    s.volume(0.1);
     lFlipper = new Flipper((width/2)-110, height-75, (width/2)-30, height-25);
     rFlipper = new Flipper((width/2)+60, height-25, (width/2)+140, height-75);    
 
@@ -261,7 +263,7 @@ void updatePhysics(float dt) {
             Vec2 surfaceVel = radius.times(lFlipper.angular_vel);
             float v2 = dot(surfaceVel, dir);
             float m1 = balls[i].mass;
-            float m2 = 100000.0; // The mass shouldn't matter?
+            float m2 = 10000000.0; // The mass shouldn't matter?
             float nv1 = (m1 * v1 + m2 * v2 - m2 * (v1 - v2) * cor) / (m1 + m2);
             float nv2 = (m1 * v1 + m2 * v2 - m1 * (v2 - v1) * cor) / (m1 + m2);
             balls[i].vel = (balls[i].vel.plus(dir.times((nv1 - v1))));
@@ -278,11 +280,11 @@ void updatePhysics(float dt) {
             Vec2 dir = delta.normalized();
             float v1 = dot(balls[i].vel, dir);
             // Flipper velocity
-            Vec2 radius = balls[i].closestPoint(lFlipper).minus(lFlipper.l1);
-            Vec2 surfaceVel = radius.times(lFlipper.angular_vel);
+            Vec2 radius = balls[i].closestPoint(rFlipper).minus(rFlipper.l2);
+            Vec2 surfaceVel = radius.times(rFlipper.angular_vel);
             float v2 = dot(surfaceVel, dir);
             float m1 = balls[i].mass;
-            float m2 = 100000.0; // The mass shouldn't matter?
+            float m2 = 10000000.0; // The mass shouldn't matter?
             float nv1 = (m1 * v1 + m2 * v2 - m2 * (v1 - v2) * cor) / (m1 + m2);
             float nv2 = (m1 * v1 + m2 * v2 - m1 * (v2 - v1) * cor) / (m1 + m2);
             balls[i].vel = balls[i].vel.plus(dir.times((nv1 - v1)));
@@ -323,7 +325,7 @@ void draw(){
       lFlipper.angular_vel = 5;
       lFlipper_rotation += lFlipper.angular_vel * (1/frameRate);
       //lFlipper_rotation += ((45*PI)/180)/5; // every dt add this much rotation
-      lFlipper_rotation = min(lFlipper_rotation, (50*PI)/180);
+      lFlipper_rotation = min(lFlipper_rotation, (90*PI)/180);
       Vec2 nL2 = new Vec2((cos(lFlipper_rotation)*(lFlipper.l2.x - lFlipper.l1.x)) + (sin(lFlipper_rotation) * (lFlipper.l2.y - lFlipper.l1.y)) + lFlipper.l1.x, (-1 * sin(lFlipper_rotation)*(lFlipper.l2.x - lFlipper.l1.x)) + (cos(lFlipper_rotation) * (lFlipper.l2.y - lFlipper.l1.y)) + lFlipper.l1.y);
       l2Bak = lFlipper.l2;
       lFlipper.l2 = nL2;
@@ -342,7 +344,7 @@ void draw(){
     if (rightPressed) {
       rFlipper.angular_vel = 5;
       rFlipper_rotation += rFlipper.angular_vel * (1/frameRate);
-      rFlipper_rotation = min(rFlipper_rotation, (50*PI)/180);
+      rFlipper_rotation = min(rFlipper_rotation, (90*PI)/180);
       Vec2 nL1 = new Vec2((cos(rFlipper_rotation)*(rFlipper.l1.x - rFlipper.l2.x)) + (-1 * sin(rFlipper_rotation) * (rFlipper.l1.y - rFlipper.l2.y)) + rFlipper.l2.x, (sin(rFlipper_rotation)*(rFlipper.l1.x - rFlipper.l2.x)) + (cos(rFlipper_rotation) * (rFlipper.l1.y - rFlipper.l2.y)) + rFlipper.l2.y);
       l1Bak = rFlipper.l1;
       rFlipper.l1 = nL1;
