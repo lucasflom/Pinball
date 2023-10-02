@@ -2,7 +2,7 @@ int numBalls = 4;
 int ballIndex = 0;
 int score = 0;
 
-String fname = "level1.txt";
+String fname = "level2.txt";
 PImage bg,ballImage,circImage,circImage2;
 
 
@@ -337,21 +337,22 @@ void draw(){
         line(walls[i].l1.x, walls[i].l1.y, walls[i].l2.x, walls[i].l2.y);
     }
     stroke(255,255,255);
+    fill(65, 74, 76);
     // draw the obstacles
     PGraphics maskImage;
     for (int i = 0; i < numCircs; i++){
-      maskImage = createGraphics(50,50);
-      maskImage.beginDraw();
-      maskImage.smooth();
-      maskImage.fill(255);
-      maskImage.circle(circObs[i].pos.x, circObs[i].pos.y, circObs[i].r*2);
-      maskImage.endDraw();
-      circImage.mask(maskImage);
-      //circle(circObs[i].pos.x, circObs[i].pos.y, circObs[i].r*2);
-      image(circImage, circObs[i].pos.x, circObs[i].pos.y);
+    //   maskImage = createGraphics(50,50);
+    //   maskImage.beginDraw();
+    //   maskImage.smooth();
+    //   maskImage.fill(255);
+    //   maskImage.circle(circObs[i].pos.x, circObs[i].pos.y, circObs[i].r*2);
+    //   maskImage.endDraw();
+    //   circImage.mask(maskImage);
+      circle(circObs[i].pos.x, circObs[i].pos.y, circObs[i].r*2);
+    //   image(circImage, circObs[i].pos.x, circObs[i].pos.y);
     }
-    fill(120, 81, 169);
-    stroke(120, 81, 169);
+    fill(89, 203, 232);
+    //stroke(89, 203, 232);
     for (int i = 0; i < numBoxes; i++){
       rect(boxObs[i].pos.x, boxObs[i].pos.y, boxObs[i].w, boxObs[i].h);
     }
@@ -361,6 +362,8 @@ void draw(){
     }
 
     // draw the balls
+    fill(120, 81, 169);
+    stroke(120, 81, 169);
     for (int i = 0; i < numBalls; i++) {
 
         ellipse(balls[i].pos.x, balls[i].pos.y, balls[i].r * 2, balls[i].r * 2);
