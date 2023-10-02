@@ -128,7 +128,9 @@ void updatePhysics(float dt) {
             int rad = 6;
             float mass = ((3.141592653 * (rad * rad))/rad) * ((3.141592653 * (rad * rad))/rad);
             balls[i] = new Circle(pos, rad, mass, vel);
-
+            if ( lostBalls == numBalls){
+                youDidIt.play();
+            }
         }
 
         // Ball-Ball Collision
@@ -419,8 +421,8 @@ void draw(){
     } else {
         fill(255);
         stroke(100);
-        text("FINAL SCORE", 375, 100);
-        text(str(score), 450, 150);
-        youDidIt.play();
+        textAlign(CENTER);
+        text("FINAL SCORE", width/2, 100);
+        text(str(score), width/2, 150);
     }
 }
