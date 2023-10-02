@@ -1,9 +1,13 @@
+import processing.sound.*;
+
+SoundFile bong, brink, bomp, youDidIt;
+
 int numBalls = 4;
 int ballIndex = 0;
 int score = 0;
 int lostBalls = 0;
 
-String fname = "level2.txt";
+String fname = "levels/level2.txt";
 PImage bg,ballImage,circImage,circImage2;
 
 
@@ -15,6 +19,9 @@ int numLines;
 Line[] lineObs;
 int numBoxes;
 Box[] boxObs; 
+
+int objInt;
+int objHit;
 
 float cor = 0.75f; // Coefficient of Restitution
 
@@ -28,6 +35,8 @@ void resetBalls(){
     ballIndex = 0;
     score = 0;
     lostBalls = 0;
+    objInt = int(random(0, numCircs));
+    objHit = 0;
     for (int i = 0; i < numBalls; i++) {
         Vec2 pos = new Vec2(-100, -100);
         Vec2 vel = new Vec2(0, 0);
@@ -63,10 +72,15 @@ void setup() {
     numLines = int(lines[numCircs+1].substring(3));
     numBoxes = int(lines[numCircs+numLines+2].substring(3));
 
-    bg = loadImage("space.jpg");
-    ballImage = loadImage("comet.jpg");
-    circImage = loadImage("miniplanet.jpg");
-    circImage2 = loadImage("planet2mini.jpg");
+	bong = new SoundFile(this, "assets/sounds/bong.mp3");
+	bomp = new SoundFile(this, "assets/sounds/Bomp.wav");
+	brink = new SoundFile(this, "assets/sounds/Brink.wav");
+	youDidIt = new SoundFile(this, "assets/sounds/YouDidIt.wav");
+
+    bg = loadImage("assets/images/space.jpg");
+    ballImage = loadImage("assets/images/comet.jpg");
+    circImage = loadImage("assets/images/miniplanet.jpg");
+    circImage2 = loadImage("assets/images/planet2mini.jpg");
 
     circObs = new Circle[numCircs];
     for (int i = 1; i < (numCircs+1); i++){
@@ -159,7 +173,22 @@ void updatePhysics(float dt) {
                 // Move out of collision
                 float overlap = 0.5f * (dist - balls[i].r - circObs[j].r);
                 balls[i].pos.subtract(delta.normalized().times(overlap)); // This line may need to be changed to account for the obstacle not moving
-                score += 100;
+                if (j == objInt){
+                    brink.play();
+                    if (objHit < 3){
+                        objHit++;
+                        score += 50;
+                    } else {
+                        objHit = 0;
+                        score += 500;
+                    }
+                    while (j == objInt){
+                        objInt = int(random(0, numCircs));
+                    }
+                } else {
+                    bomp.play();
+                    score += 100;
+                }
                 // Collision
                 Vec2 dir = delta.normalized();
                 float v1 = dot(balls[i].vel, dir);
@@ -197,6 +226,7 @@ void updatePhysics(float dt) {
             Vec2 delta = balls[i].pos.minus(boxObs[j].pos);
             float dist = delta.length();
             if (balls[i].isColliding(boxObs[j])){
+                bomp.play();
                 // Move out of collision
                 float overlap = (dist - balls[i].r - (boxObs[j].pos.distanceTo(balls[i].closestPoint(boxObs[j])))); // Include the box's side of it too
                 balls[i].pos.subtract(delta.normalized().times(overlap));
@@ -346,7 +376,7 @@ void draw(){
     stroke(255,255,255);
     fill(65, 74, 76);
     // draw the obstacles
-    PGraphics maskImage;
+    //PGraphics maskImage;
     for (int i = 0; i < numCircs; i++){
     //   maskImage = createGraphics(50,50);
     //   maskImage.beginDraw();
@@ -355,6 +385,11 @@ void draw(){
     //   maskImage.circle(circObs[i].pos.x, circObs[i].pos.y, circObs[i].r*2);
     //   maskImage.endDraw();
     //   circImage.mask(maskImage);
+    if (i == objInt){
+            fill(255,242,0);
+        } else {
+            fill(65, 74, 76);
+        }
       circle(circObs[i].pos.x, circObs[i].pos.y, circObs[i].r*2);
     //   image(circImage, circObs[i].pos.x, circObs[i].pos.y);
     }
@@ -372,9 +407,7 @@ void draw(){
     fill(120, 81, 169);
     stroke(120, 81, 169);
     for (int i = 0; i < numBalls; i++) {
-
         ellipse(balls[i].pos.x, balls[i].pos.y, balls[i].r * 2, balls[i].r * 2);
-
     }
 
     // draw the score
@@ -388,5 +421,6 @@ void draw(){
         stroke(100);
         text("FINAL SCORE", 375, 100);
         text(str(score), 450, 150);
+        youDidIt.play();
     }
 }
