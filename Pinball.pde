@@ -282,7 +282,7 @@ void updatePhysics(float dt) {
             float v1 = dot(balls[i].vel, dir);
             // Flipper velocity
             Vec2 radius = rFlipper.l2.minus(balls[i].closestPoint(rFlipper));
-            Vec2 surfaceVel = new Vec2(-1*radius.y, radius.x).times(rFlipper.angular_vel);
+            Vec2 surfaceVel = new Vec2(radius.y, -1*radius.x).times(rFlipper.angular_vel);
             float v2 = dot(surfaceVel, dir);
             float m1 = balls[i].mass;
             float m2 = 10000000.0; // The mass shouldn't matter?
