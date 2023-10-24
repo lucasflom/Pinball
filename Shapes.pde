@@ -3,6 +3,13 @@ public class Circle {
     public float r;
     public float mass;
     public Vec2 vel;
+
+    public Circle(Vec2 pos, float r){
+        this.pos = pos;
+        this.r = r;
+        this.mass = 9999;
+        this.vel = new Vec2(0,0);
+    }
     
     public Circle(Vec2 pos, float r, float mass, Vec2 vel){
         this.pos = pos;
@@ -11,6 +18,12 @@ public class Circle {
         this.vel = vel;
     }
     
+
+    // Circle v Point
+    public Boolean isColliding(Vec2 point){
+        float distance = this.pos.distanceTo(point);
+        return (distance <= this.r);
+    }
     
    	// Circle v Circle
     public Boolean isColliding(Circle other) {
